@@ -4,6 +4,7 @@
 #include "AegisRemoteControlHandler.h"
 #include "AegisWebSocketServer.h"
 #include "AegisSubsystem.h"
+#include "AegisPluginValidator.h"
 
 #include "Editor.h"
 #include "LevelEditor.h"
@@ -19,6 +20,12 @@ DEFINE_LOG_CATEGORY(LogAegisBridge);
 void FAegisBridgeModule::StartupModule()
 {
     UE_LOG(LogAegisBridge, Log, TEXT("AEGIS Bridge Module starting up..."));
+
+    // Validate required plugins before proceeding
+    if (!UAegisPluginValidator::ValidateRequiredPlugins())
+    {
+        UE_LOG(LogAegisBridge, Warning, TEXT("Some required plugins are missing. AEGIS features may be limited."));
+    }
 
     // Load configuration
     HttpServerPort = GetDefault<URemoteControlSettings>()->RemoteControlHttpServerPort;
